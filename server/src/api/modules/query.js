@@ -1,4 +1,4 @@
-import merge from 'lodash'
+import merge from 'lodash/merge'
 
 const testData = { message: 'hello' }
 
@@ -10,7 +10,6 @@ export const controllers = {
   updateOne(docToUpdate, update) {
     // merge mutates its first argument!
     merge(docToUpdate, update)
-    console.log('object assign:', Object.assign(docToUpdate, update))
     return docToUpdate.save()
   },
 

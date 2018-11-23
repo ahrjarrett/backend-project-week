@@ -21,7 +21,7 @@ require("source-map-support").install();
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "c5696a64e76ec82a4f0d"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "3fb7e87840b769ac34aa"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -973,11 +973,8 @@ var protect = [decodeToken(), getFreshUser()];
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise__ = __webpack_require__("babel-runtime/core-js/promise");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_babel_runtime_core_js_object_assign__ = __webpack_require__("babel-runtime/core-js/object/assign");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_babel_runtime_core_js_object_assign___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_babel_runtime_core_js_object_assign__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash__ = __webpack_require__("lodash");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash__);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_merge__ = __webpack_require__("lodash/merge");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_merge___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_lodash_merge__);
 
 
 
@@ -995,8 +992,7 @@ var controllers = {
   },
   updateOne: function updateOne(docToUpdate, update) {
     // merge mutates its first argument!
-    __WEBPACK_IMPORTED_MODULE_5_lodash___default()(docToUpdate, update);
-    console.log('object assign:', __WEBPACK_IMPORTED_MODULE_4_babel_runtime_core_js_object_assign___default()(docToUpdate, update));
+    __WEBPACK_IMPORTED_MODULE_4_lodash_merge___default()(docToUpdate, update);
     return docToUpdate.save();
   },
   deleteOne: function deleteOne(docToDelete) {
@@ -1444,13 +1440,6 @@ module.exports = __webpack_require__("./src/index.js");
 
 /***/ }),
 
-/***/ "babel-runtime/core-js/object/assign":
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/core-js/object/assign");
-
-/***/ }),
-
 /***/ "babel-runtime/core-js/promise":
 /***/ (function(module, exports) {
 
@@ -1521,10 +1510,10 @@ module.exports = require("jsonwebtoken");
 
 /***/ }),
 
-/***/ "lodash":
+/***/ "lodash/merge":
 /***/ (function(module, exports) {
 
-module.exports = require("lodash");
+module.exports = require("lodash/merge");
 
 /***/ }),
 
