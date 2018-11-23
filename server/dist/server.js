@@ -21,7 +21,7 @@ require("source-map-support").install();
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "a8253659713e12d790b5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "af157ba41e849630233a"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1201,7 +1201,27 @@ notesRouter.route('/:id')
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mongoose___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_mongoose__);
 
 
-var schema = {};
+var schema = {
+  title: {
+    type: String,
+    required: true
+  },
+
+  body: {
+    type: String,
+    required: true
+  },
+
+  isComplete: {
+    type: Boolean,
+    default: false
+  },
+
+  user: {
+    type: __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Schema.Types.ObjectId,
+    ref: 'user'
+  }
+};
 
 var noteSchema = new __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Schema(schema);
 
@@ -1246,7 +1266,28 @@ noteRouter.route('/:id')
 
 
 
-var schema = {};
+var schema = {
+  email: {
+    type: String,
+    unique: true,
+    required: [true, 'User email is required.']
+  },
+
+  passwordHash: {
+    type: String,
+    required: [true, 'User password is required.']
+  },
+
+  username: {
+    type: String
+    // default: this.email,
+  },
+
+  notes: [{
+    type: __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Schema.Types.ObjectId,
+    ref: 'note'
+  }]
+};
 
 var userSchema = new __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Schema(schema, { timestamps: true });
 
