@@ -10,9 +10,8 @@ noteRouter.route('/')
   .post(noteController.createOne)
 
 noteRouter.route('/:id')
-  // before any method is run, req.docFromId will already be set
-  // bc of the function associated with `noteRouter.param('id')` above
+  /* before any method is run, req.docFromId will already be set
+   * bc of the function associated with `noteRouter.param('id')` above */
   .get(noteController.getOne)
   .put(noteController.updateOne)
   .delete(noteController.deleteOne)
-

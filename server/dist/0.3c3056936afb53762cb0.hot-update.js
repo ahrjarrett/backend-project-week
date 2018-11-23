@@ -32,32 +32,36 @@ exports.modules = {
 var _this = this;
 
 
+
 var testData = { message: 'hello' };
 
 var controllers = {
-  createOne: function createOne(model, body) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  createOne: function createOne(Model, body) {
+    return Model.create(body);
   },
   updateOne: function updateOne(docToUpdate, update) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+    // merge mutates its first argument!
+
+    __WEBPACK_IMPORTED_MODULE_4_lodash___default()(docToUpdate, update);
+    return docToUpdate.save();
   },
   deleteOne: function deleteOne(docToDelete) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+    return docToDelete.remove();
   },
   getOne: function getOne(docToGet) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(docToGet);
   },
-  getAll: function getAll(model) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  getAll: function getAll(Model) {
+    return Model.find({}).exec();
   },
-  findByParam: function findByParam(model, id) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  findByParam: function findByParam(Model, id) {
+    return Model.findById(id).exec();
   }
 };
 
-var createOne = function createOne(model) {
+var createOne = function createOne(Model) {
   return function (req, res, next) {
-    return controllers.createOne(model, req.body).then(function (doc) {
+    return controllers.createOne(Model, req.body).then(function (doc) {
       return res.status(201).json(doc);
     }).catch(function (err) {
       return next(err);
@@ -65,7 +69,7 @@ var createOne = function createOne(model) {
   };
 };
 
-var updateOne = function updateOne(model) {
+var updateOne = function updateOne(Model) {
   return function () {
     var _ref = __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_1_babel_runtime_regenerator___default.a.mark(function _callee(req, res, next) {
       var docToUpdate, update;
@@ -95,7 +99,7 @@ var updateOne = function updateOne(model) {
   }();
 };
 
-var deleteOne = function deleteOne(model) {
+var deleteOne = function deleteOne(Model) {
   return function (req, res, next) {
     return controllers.deleteOne(req.docFromId).then(function (doc) {
       return res.status(201).json(doc);
@@ -105,7 +109,7 @@ var deleteOne = function deleteOne(model) {
   };
 };
 
-var getOne = function getOne(model) {
+var getOne = function getOne(Model) {
   return function (req, res, next) {
     return controllers.getOne(req.docFromId).then(function (doc) {
       return res.status(201).json(doc);
@@ -115,9 +119,9 @@ var getOne = function getOne(model) {
   };
 };
 
-var getAll = function getAll(model) {
+var getAll = function getAll(Model) {
   return function (req, res, next) {
-    return controllers.getAll(model).then(function (docs) {
+    return controllers.getAll(Model).then(function (docs) {
       return res.status(201).json(docs);
     }).catch(function (err) {
       return next(err);
@@ -125,9 +129,9 @@ var getAll = function getAll(model) {
   };
 };
 
-var findByParam = function findByParam(model) {
+var findByParam = function findByParam(Model) {
   return function (req, res, next, id) {
-    return controllers.findByParam(model, id).then(function (doc) {
+    return controllers.findByParam(Model, id).then(function (doc) {
       if (!doc) next(new Error('Not found error'));else {
         // this is where we actually attach the doc to the req object
         req.docFromId = doc;
@@ -139,101 +143,24 @@ var findByParam = function findByParam(model) {
   };
 };
 
-var generateControllers = function generateControllers(model) {
+var generateControllers = function generateControllers(Model) {
   var overrides = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   var defaults = {
-    findByParam: findByParam(model),
-    getAll: getAll(model),
-    getOne: getOne(model),
-    deleteOne: deleteOne(model),
-    updateOne: updateOne(model),
-    createOne: createOne(model)
+    findByParam: findByParam(Model),
+    getAll: getAll(Model),
+    getOne: getOne(Model),
+    deleteOne: deleteOne(Model),
+    updateOne: updateOne(Model),
+    createOne: createOne(Model)
   };
   return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_extends___default()({}, defaults, overrides);
 };
 
 /***/ }),
 
-/***/ "./src/api/resources/note/note.controller.js":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modules_query__ = __webpack_require__("./src/api/modules/query.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__note_model__ = __webpack_require__("./src/api/resources/note/note.model.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__note_model___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__note_model__);
-
-
-
-/* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_0__modules_query__["a" /* generateControllers */])(__WEBPACK_IMPORTED_MODULE_1__note_model__["Note"]));
-
-/***/ }),
-
-/***/ "./src/api/resources/note/note.model.js":
-/***/ (function(module, exports) {
-
-
-
-/***/ }),
-
-/***/ "./src/api/resources/note/note.restRouter.js":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return noteRouter; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__("express");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__note_controller__ = __webpack_require__("./src/api/resources/note/note.controller.js");
-
-
-
-var noteRouter = __WEBPACK_IMPORTED_MODULE_0_express___default.a.Router();
-
-noteRouter.param('id', __WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].findByParam);
-
-noteRouter.route('/').get(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].getAll).post(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].createOne);
-
-noteRouter.route('/:id')
-// before any method is run, req.docFromId will already be set
-// bc of the function associated with `noteRouter.param('id')` above
-.get(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].getOne).put(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].updateOne).delete(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].deleteOne);
-
-/***/ }),
-
-/***/ "babel-runtime/core-js/promise":
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/core-js/promise");
-
-/***/ }),
-
-/***/ "babel-runtime/helpers/asyncToGenerator":
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/helpers/asyncToGenerator");
-
-/***/ }),
-
-/***/ "babel-runtime/helpers/extends":
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/helpers/extends");
-
-/***/ }),
-
-/***/ "babel-runtime/regenerator":
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/regenerator");
-
-/***/ }),
-
-/***/ "lodash":
-/***/ (function(module, exports) {
-
-module.exports = require("lodash");
-
-/***/ })
+/***/ "babel-runtime/core-js/object/assign":
+false
 
 };
-//# sourceMappingURL=0.4b4800b222029ab410e2.hot-update.js.map
+//# sourceMappingURL=0.3c3056936afb53762cb0.hot-update.js.map

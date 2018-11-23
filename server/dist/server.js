@@ -21,7 +21,7 @@ require("source-map-support").install();
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "af157ba41e849630233a"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "c5696a64e76ec82a4f0d"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -973,8 +973,11 @@ var protect = [decodeToken(), getFreshUser()];
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise__ = __webpack_require__("babel-runtime/core-js/promise");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash__ = __webpack_require__("lodash");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_lodash__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_babel_runtime_core_js_object_assign__ = __webpack_require__("babel-runtime/core-js/object/assign");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_babel_runtime_core_js_object_assign___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_babel_runtime_core_js_object_assign__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash__ = __webpack_require__("lodash");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash__);
+
 
 
 
@@ -983,32 +986,36 @@ var protect = [decodeToken(), getFreshUser()];
 var _this = this;
 
 
+
 var testData = { message: 'hello' };
 
 var controllers = {
-  createOne: function createOne(model, body) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  createOne: function createOne(Model, body) {
+    return Model.create(body);
   },
   updateOne: function updateOne(docToUpdate, update) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+    // merge mutates its first argument!
+    __WEBPACK_IMPORTED_MODULE_5_lodash___default()(docToUpdate, update);
+    console.log('object assign:', __WEBPACK_IMPORTED_MODULE_4_babel_runtime_core_js_object_assign___default()(docToUpdate, update));
+    return docToUpdate.save();
   },
   deleteOne: function deleteOne(docToDelete) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+    return docToDelete.remove();
   },
   getOne: function getOne(docToGet) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(docToGet);
   },
-  getAll: function getAll(model) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  getAll: function getAll(Model) {
+    return Model.find({}).exec();
   },
-  findByParam: function findByParam(model, id) {
-    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  findByParam: function findByParam(Model, id) {
+    return Model.findById(id).exec();
   }
 };
 
-var createOne = function createOne(model) {
+var createOne = function createOne(Model) {
   return function (req, res, next) {
-    return controllers.createOne(model, req.body).then(function (doc) {
+    return controllers.createOne(Model, req.body).then(function (doc) {
       return res.status(201).json(doc);
     }).catch(function (err) {
       return next(err);
@@ -1016,7 +1023,7 @@ var createOne = function createOne(model) {
   };
 };
 
-var updateOne = function updateOne(model) {
+var updateOne = function updateOne(Model) {
   return function () {
     var _ref = __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_1_babel_runtime_regenerator___default.a.mark(function _callee(req, res, next) {
       var docToUpdate, update;
@@ -1046,7 +1053,7 @@ var updateOne = function updateOne(model) {
   }();
 };
 
-var deleteOne = function deleteOne(model) {
+var deleteOne = function deleteOne(Model) {
   return function (req, res, next) {
     return controllers.deleteOne(req.docFromId).then(function (doc) {
       return res.status(201).json(doc);
@@ -1056,7 +1063,7 @@ var deleteOne = function deleteOne(model) {
   };
 };
 
-var getOne = function getOne(model) {
+var getOne = function getOne(Model) {
   return function (req, res, next) {
     return controllers.getOne(req.docFromId).then(function (doc) {
       return res.status(201).json(doc);
@@ -1066,9 +1073,9 @@ var getOne = function getOne(model) {
   };
 };
 
-var getAll = function getAll(model) {
+var getAll = function getAll(Model) {
   return function (req, res, next) {
-    return controllers.getAll(model).then(function (docs) {
+    return controllers.getAll(Model).then(function (docs) {
       return res.status(201).json(docs);
     }).catch(function (err) {
       return next(err);
@@ -1076,9 +1083,9 @@ var getAll = function getAll(model) {
   };
 };
 
-var findByParam = function findByParam(model) {
+var findByParam = function findByParam(Model) {
   return function (req, res, next, id) {
-    return controllers.findByParam(model, id).then(function (doc) {
+    return controllers.findByParam(Model, id).then(function (doc) {
       if (!doc) next(new Error('Not found error'));else {
         // this is where we actually attach the doc to the req object
         req.docFromId = doc;
@@ -1090,16 +1097,16 @@ var findByParam = function findByParam(model) {
   };
 };
 
-var generateControllers = function generateControllers(model) {
+var generateControllers = function generateControllers(Model) {
   var overrides = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   var defaults = {
-    findByParam: findByParam(model),
-    getAll: getAll(model),
-    getOne: getOne(model),
-    deleteOne: deleteOne(model),
-    updateOne: updateOne(model),
-    createOne: createOne(model)
+    findByParam: findByParam(Model),
+    getAll: getAll(Model),
+    getOne: getOne(Model),
+    deleteOne: deleteOne(Model),
+    updateOne: updateOne(Model),
+    createOne: createOne(Model)
   };
   return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_extends___default()({}, defaults, overrides);
 };
@@ -1223,7 +1230,7 @@ var schema = {
   }
 };
 
-var noteSchema = new __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Schema(schema);
+var noteSchema = new __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Schema(schema, { timestamps: true });
 
 var Note = __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.model('note', noteSchema);
 
@@ -1247,8 +1254,8 @@ noteRouter.param('id', __WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* def
 noteRouter.route('/').get(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].getAll).post(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].createOne);
 
 noteRouter.route('/:id')
-// before any method is run, req.docFromId will already be set
-// bc of the function associated with `noteRouter.param('id')` above
+/* before any method is run, req.docFromId will already be set
+ * bc of the function associated with `noteRouter.param('id')` above */
 .get(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].getOne).put(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].updateOne).delete(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].deleteOne);
 
 /***/ }),
@@ -1338,7 +1345,7 @@ __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Promise = global.Promise;
 
 var connect = function connect() {
   console.log('MONGO DB CONNECTED');
-  return __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.connect('mongodb://localhost/27017', {});
+  return __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.connect('mongodb://localhost/27017', { useNewUrlParser: true });
 };
 
 /***/ }),
@@ -1434,6 +1441,13 @@ app.all('*', function (req, res) {
 __webpack_require__("./node_modules/webpack/hot/poll.js?1000");
 module.exports = __webpack_require__("./src/index.js");
 
+
+/***/ }),
+
+/***/ "babel-runtime/core-js/object/assign":
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/core-js/object/assign");
 
 /***/ }),
 

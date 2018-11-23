@@ -1,39 +1,43 @@
 import merge from 'lodash'
+
 const testData = { message: 'hello' }
 
 export const controllers = {
-  createOne(model, body) {
-    return Promise.resolve(testData)
+  createOne(Model, body) {
+    return Model.create(body)
   },
 
   updateOne(docToUpdate, update) {
-    return Promise.resolve(testData)
+    // merge mutates its first argument!
+    merge(docToUpdate, update)
+    console.log('object assign:', Object.assign(docToUpdate, update))
+    return docToUpdate.save()
   },
 
   deleteOne(docToDelete) {
-    return Promise.resolve(testData)
+    return docToDelete.remove()
   },
 
   getOne(docToGet) {
-    return Promise.resolve(testData)
+    return Promise.resolve(docToGet)
   },
 
-  getAll(model) {
-    return Promise.resolve(testData)
+  getAll(Model) {
+    return Model.find({}).exec()
   },
 
-  findByParam(model, id) {
-    return Promise.resolve(testData)
-  }
+  findByParam(Model, id) {
+    return Model.findById(id).exec()
+  },
 }
 
-export const createOne = model => (req, res, next) => {
-  return controllers.createOne(model, req.body)
+export const createOne = Model => (req, res, next) => {
+  return controllers.createOne(Model, req.body)
     .then(doc => res.status(201).json(doc))
     .catch(err => next(err))
 }
 
-export const updateOne = model => async (req, res, next) => {
+export const updateOne = Model => async (req, res, next) => {
   const docToUpdate = req.docFromId
   const update = req.body
 
@@ -42,26 +46,26 @@ export const updateOne = model => async (req, res, next) => {
     .catch(err => next(err))
 }
 
-export const deleteOne = model => (req, res, next) => {
+export const deleteOne = Model => (req, res, next) => {
   return controllers.deleteOne(req.docFromId)
     .then(doc => res.status(201).json(doc))
     .catch(err => next(err))
 }
 
-export const getOne = model => (req, res, next) => {
+export const getOne = Model => (req, res, next) => {
   return controllers.getOne(req.docFromId)
     .then(doc => res.status(201).json(doc))
     .catch(err => next(err))
 }
 
-export const getAll = model => (req, res, next) => {
-  return controllers.getAll(model)
+export const getAll = Model => (req, res, next) => {
+  return controllers.getAll(Model)
     .then(docs => res.status(201).json(docs))
     .catch(err => next(err))
 }
 
-export const findByParam = model => (req, res, next, id) => {
-  return controllers.findByParam(model, id)
+export const findByParam = Model => (req, res, next, id) => {
+  return controllers.findByParam(Model, id)
     .then(doc => {
       if (!doc) next(new Error('Not found error'))
       else {
@@ -73,14 +77,14 @@ export const findByParam = model => (req, res, next, id) => {
     .catch(err => next(err))
 }
 
-export const generateControllers = (model, overrides = {}) => {
+export const generateControllers = (Model, overrides = {}) => {
   const defaults = {
-    findByParam: findByParam(model),
-    getAll: getAll(model),
-    getOne: getOne(model),
-    deleteOne: deleteOne(model),
-    updateOne: updateOne(model),
-    createOne: createOne(model),
+    findByParam: findByParam(Model),
+    getAll: getAll(Model),
+    getOne: getOne(Model),
+    deleteOne: deleteOne(Model),
+    updateOne: updateOne(Model),
+    createOne: createOne(Model),
   }
   return { ...defaults, ...overrides }
 }
