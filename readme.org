@@ -1,6 +1,9 @@
 
 * Deploy
 
+- Site:
+  http://18.236.166.82:7000/api/notes
+
 - Console: 
   https://console.aws.amazon.com/ec2/
 
@@ -16,7 +19,6 @@ Ubuntu 18
   $ ssh -i backend-project.pem ahrjarrett.236.166.82
   $ sudo su # switch to root user
 #+END_SRC
-  
 
 ** Config
 
@@ -70,9 +72,10 @@ EC2 needs to know which port to expose.
 
    | Type       | Protocol | Port Range | Source   | Description |
    |------------+----------+------------+----------+-------------|
-   | Custom TCP | TCP      |       3000 | Anywhere | [Optional]  |
+   | Custom TCP | TCP      |       7000 | Anywhere | [Optional]  |
    
-Now navigate to http://18.236.166.82:3000/ and you should see your dumb app running!
+Now navigate to http://18.236.166.82:7000/ and you should see your dumb app running!
+
 
 ** Setting up your git repo
 

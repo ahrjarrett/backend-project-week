@@ -3,10 +3,11 @@ import { createServer } from 'http'
 import app from './server'
 
 const server = http.createServer(app)
+const PORT = 7000
 let currentApp = app
 
-server.listen(7000, () => {
-  console.log('Server listening on port 7000')
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`)
 })
 
 if (module.hot) {

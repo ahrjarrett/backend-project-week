@@ -1,18 +1,20 @@
 import express from 'express'
-import { rootRouter } from './api'
-import cors from 'cors'
+import setupMiddleware from './middleware'
+import { restRouter } from './api'
+import { connect } from './db'
+import { signin, protect } from './api/modules/auth'
 import bodyParser from 'body-parser'
+
 const app = express()
 
-app.use(bodyParser({ extended: true }))
-app.use(cors())
-app.use('/api', rootRouter)
+setupMiddleware(app)
+connect()
+
+app.use('/signin', signin)
+app.use('/api', restRouter)
 
 app.all('*', (req, res) => {
-  res.json({
-    error: "Use /api/notes to get all notes or post a note, "
-      + "otherwise use /api/notes/:id to update, get or delete a single note"
-  })
+  res.json({ ok: true })
 })
 
 export default app

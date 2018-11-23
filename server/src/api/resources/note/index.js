@@ -1,3 +1,6 @@
+export * from './note.restRouter'
+
+/*
 import express from 'express'
 import { v4 } from 'uuid'
 
@@ -56,3 +59,5 @@ notesRouter.route('/:id')
     notes = notes.filter(n => n.id !== id)
     return res.status(202).json(note)
   })
+
+*/

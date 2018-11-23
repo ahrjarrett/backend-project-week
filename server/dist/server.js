@@ -21,7 +21,7 @@ require("source-map-support").install();
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "83bb1860e21be5e29b39"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "66305ea1d00c7702fbee"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -829,80 +829,476 @@ if(true) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return rootRouter; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__("express");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__resources_notes__ = __webpack_require__("./src/api/resources/notes/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__restRouter__ = __webpack_require__("./src/api/restRouter.js");
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__restRouter__["a"]; });
 
-
-
-var rootRouter = __WEBPACK_IMPORTED_MODULE_0_express___default.a.Router();
-rootRouter.use('/notes', __WEBPACK_IMPORTED_MODULE_1__resources_notes__["a" /* notesRouter */]);
 
 /***/ }),
 
-/***/ "./src/api/resources/notes/index.js":
+/***/ "./src/api/modules/auth.js":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return notesRouter; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__("express");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_uuid__ = __webpack_require__("uuid");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_uuid___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_uuid__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return signin; });
+/* unused harmony export decodeToken */
+/* unused harmony export getFreshUser */
+/* unused harmony export verifyUser */
+/* unused harmony export signToken */
+/* unused harmony export protect */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__resources_user_user_model__ = __webpack_require__("./src/api/resources/user/user.model.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jsonwebtoken__ = __webpack_require__("jsonwebtoken");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jsonwebtoken___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_jsonwebtoken__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_express_jwt__ = __webpack_require__("express-jwt");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_express_jwt___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_express_jwt__);
 
 
 
-var findById = function findById(id) {
-  return function (item) {
-    return item.id === id;
+
+// remove? change?
+var jwtSecret = 'blueRhinoJumps';
+
+var checkToken = __WEBPACK_IMPORTED_MODULE_2_express_jwt___default()({ secret: jwtSecret });
+var disableAuth = false;
+
+var signin = function signin(req, res, next) {
+  // req.user will be there from the middleware
+  // verify user. Then we can just create a token
+  // and send it back for the client to consume
+  var token = signToken(req.user.id);
+  res.json({ token: token });
+};
+
+var decodeToken = function decodeToken() {
+  return function (req, res, next) {
+    if (disableAuth) {
+      return next();
+    }
+    // make it optional to place token on query string
+    // if it is, place it on the headers where it should be
+    // so checkToken can see it. See follow the 'Bearer 034930493' format
+    // so checkToken can see it and decode it
+    if (req.query && req.query.hasOwnProperty('access_token')) {
+      req.headers.authorization = 'Bearer ' + req.query.access_token;
+    }
+
+    // this will call next if token is valid
+    // and send error if its not. It will attached
+    // the decoded token to req.user
+    checkToken(req, res, next);
   };
 };
 
-var sendError = function sendError(msg, res) {
-  res.status(422);
-  res.json({ Error: msg });
-  return;
+var getFreshUser = function getFreshUser() {
+  return function (req, res, next) {
+    return __WEBPACK_IMPORTED_MODULE_0__resources_user_user_model__["a" /* User */].findById(req.user.id).then(function (user) {
+      if (!user) {
+        // if no user is found it was not
+        // it was a valid JWT but didn't decode
+        // to a real user in our DB. Either the user was deleted
+        // since the client got the JWT, or
+        // it was a JWT from some other source
+        res.status(401).send('Unauthorized');
+      } else {
+        // update req.user with fresh user from
+        // stale token data
+        req.user = user;
+        next();
+      }
+    }).catch(function (error) {
+      return next(error);
+    });
+  };
 };
 
-var notes = [{ id: Object(__WEBPACK_IMPORTED_MODULE_1_uuid__["v4"])(), content: { title: "example note title", body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." } }, { id: Object(__WEBPACK_IMPORTED_MODULE_1_uuid__["v4"])(), content: { title: "another example note", body: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?" } }, { id: Object(__WEBPACK_IMPORTED_MODULE_1_uuid__["v4"])(), content: { title: "here's a 3rd example", body: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat." } }];
+var verifyUser = function verifyUser() {
+  return function (req, res, next) {
+    var username = req.body.username;
+    var password = req.body.password;
 
-var notesRouter = __WEBPACK_IMPORTED_MODULE_0_express___default.a.Router();
+    // if no username or password then send
+    if (!username || !password) {
+      res.status(400).send('You need a username and password');
+      return;
+    }
 
-notesRouter.route('/').get(function (req, res) {
-  return res.status(200).json(notes);
-}).post(function (req, res) {
-  var content = req.body.content;
+    // look user up in the DB so we can check
+    // if the passwords match for the username
+    __WEBPACK_IMPORTED_MODULE_0__resources_user_user_model__["a" /* User */].findOne({ username: username }).then(function (user) {
+      if (!user) {
+        res.status(401).send('No user with the given username');
+      } else {
+        // checking the passowords here
+        if (!user.authenticate(password)) {
+          res.status(401).send('Wrong password');
+        } else {
+          // if everything is good,
+          // then attach to req.user
+          // and call next so the controller
+          // can sign a token from the req.user._id
+          req.user = user;
+          next();
+        }
+      }
+    }).catch(function (error) {
+      return next(err);
+    });
+  };
+};
 
-  var note = { id: Object(__WEBPACK_IMPORTED_MODULE_1_uuid__["v4"])(), content: content };
-  if (!content.title || !content.body) return sendError('Notes require both a title and body', res);
-  notes.push(note);
-  return res.status(201).json(note);
-});
+var signToken = function signToken(id) {
+  return __WEBPACK_IMPORTED_MODULE_1_jsonwebtoken___default.a.sign({ id: id }, jwtSecret, { expiresIn: '30d' });
+};
 
-notesRouter.route('/:id').get(function (req, res) {
-  var id = req.params.id;
+var protect = [decodeToken(), getFreshUser()];
 
-  var note = notes.find(findById(id));
-  return note ? res.status(200).json(note) : sendError("Note not found", res);
-}).put(function (req, res) {
-  var id = req.params.id;
-  var content = req.body.content;
+/***/ }),
 
-  var note = notes.find(findById(id));
-  if (!note) return sendError('Note not found');else if (!content.title || !content.body) return sendError('Notes require both a title and body', res);
-  note.content = content;
-  return res.status(204).json(note);
-}).delete(function (req, res) {
-  var id = req.params.id;
+/***/ "./src/api/modules/query.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-  var note = notes.find(findById(id));
-  if (!note) return sendError('Note not found!', res);
-  notes = notes.filter(function (n) {
-    return n.id !== id;
-  });
-  return res.status(202).json(note);
-});
+"use strict";
+/* unused harmony export controllers */
+/* unused harmony export createOne */
+/* unused harmony export updateOne */
+/* unused harmony export deleteOne */
+/* unused harmony export getOne */
+/* unused harmony export getAll */
+/* unused harmony export findByParam */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return generateControllers; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_extends__ = __webpack_require__("babel-runtime/helpers/extends");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_extends___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_extends__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_regenerator__ = __webpack_require__("babel-runtime/regenerator");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_regenerator__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator__ = __webpack_require__("babel-runtime/helpers/asyncToGenerator");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise__ = __webpack_require__("babel-runtime/core-js/promise");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash__ = __webpack_require__("lodash");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_lodash__);
+
+
+
+
+
+var _this = this;
+
+
+var testData = { message: 'hello' };
+
+var controllers = {
+  createOne: function createOne(model, body) {
+    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  },
+  updateOne: function updateOne(docToUpdate, update) {
+    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  },
+  deleteOne: function deleteOne(docToDelete) {
+    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  },
+  getOne: function getOne(docToGet) {
+    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  },
+  getAll: function getAll(model) {
+    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  },
+  findByParam: function findByParam(model, id) {
+    return __WEBPACK_IMPORTED_MODULE_3_babel_runtime_core_js_promise___default.a.resolve(testData);
+  }
+};
+
+var createOne = function createOne(model) {
+  return function (req, res, next) {
+    return controllers.createOne(model, req.body).then(function (doc) {
+      return res.status(201).json(doc);
+    }).catch(function (err) {
+      return next(err);
+    });
+  };
+};
+
+var updateOne = function updateOne(model) {
+  return function () {
+    var _ref = __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_1_babel_runtime_regenerator___default.a.mark(function _callee(req, res, next) {
+      var docToUpdate, update;
+      return __WEBPACK_IMPORTED_MODULE_1_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              docToUpdate = req.docFromId;
+              update = req.body;
+              return _context.abrupt('return', controllers.updateOne(docToUpdate, update).then(function (doc) {
+                return res.status(201).json(doc);
+              }).catch(function (err) {
+                return next(err);
+              }));
+
+            case 3:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, _callee, _this);
+    }));
+
+    return function (_x, _x2, _x3) {
+      return _ref.apply(this, arguments);
+    };
+  }();
+};
+
+var deleteOne = function deleteOne(model) {
+  return function (req, res, next) {
+    return controllers.deleteOne(req.docFromId).then(function (doc) {
+      return res.status(201).json(doc);
+    }).catch(function (err) {
+      return next(err);
+    });
+  };
+};
+
+var getOne = function getOne(model) {
+  return function (req, res, next) {
+    return controllers.getOne(req.docFromId).then(function (doc) {
+      return res.status(201).json(doc);
+    }).catch(function (err) {
+      return next(err);
+    });
+  };
+};
+
+var getAll = function getAll(model) {
+  return function (req, res, next) {
+    return controllers.getAll(model).then(function (docs) {
+      return res.status(201).json(docs);
+    }).catch(function (err) {
+      return next(err);
+    });
+  };
+};
+
+var findByParam = function findByParam(model) {
+  return function (req, res, next, id) {
+    return controllers.findByParam(model, id).then(function (doc) {
+      if (!doc) next(new Error('Not found error'));else {
+        // this is where we actually attach the doc to the req object
+        req.docFromId = doc;
+        next();
+      }
+    }).catch(function (err) {
+      return next(err);
+    });
+  };
+};
+
+var generateControllers = function generateControllers(model) {
+  var overrides = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  var defaults = {
+    findByParam: findByParam(model),
+    getAll: getAll(model),
+    getOne: getOne(model),
+    deleteOne: deleteOne(model),
+    updateOne: updateOne(model),
+    createOne: createOne(model)
+  };
+  return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_extends___default()({}, defaults, overrides);
+};
+
+/***/ }),
+
+/***/ "./src/api/resources/note/index.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__note_restRouter__ = __webpack_require__("./src/api/resources/note/note.restRouter.js");
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__note_restRouter__["a"]; });
+
+
+/*
+import express from 'express'
+import { v4 } from 'uuid'
+
+const findById = id => item => item.id === id
+
+const sendError = (msg, res) => {
+  res.status(422)
+  res.json({ Error: msg })
+  return
+}
+
+let notes = [
+  { id: v4(), content: { title: "example note title", body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." } },
+  { id: v4(), content: { title: "another example note", body: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?" } },
+  { id: v4(), content: { title: "here's a 3rd example", body: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat." } },
+]
+
+export const notesRouter = express.Router()
+
+notesRouter.route('/')
+  .get((req, res) => res.status(200).json(notes))
+
+  .post((req, res) => {
+    const { content } = req.body
+    const note = { id: v4(), content }
+    if (!content.title || !content.body)
+      return sendError('Notes require both a title and body', res)
+    notes.push(note)
+    return res.status(201).json(note)
+  })
+
+notesRouter.route('/:id')
+  .get((req, res) => {
+    const { id } = req.params
+    const note = notes.find(findById(id))
+    return note ? res.status(200).json(note) : sendError("Note not found", res)
+  })
+
+  .put((req, res) => {
+    const { id } = req.params
+    const { content } = req.body
+    let note = notes.find(findById(id))
+    if (!note)
+      return sendError('Note not found')
+    else if (!content.title || !content.body)
+      return sendError('Notes require both a title and body', res)
+    note.content = content
+    return res.status(204).json(note)
+  })
+
+  .delete((req, res) => {
+    const { id } = req.params
+    const note = notes.find(findById(id))
+    if (!note)
+      return sendError('Note not found!', res)
+    notes = notes.filter(n => n.id !== id)
+    return res.status(202).json(note)
+  })
+
+*/
+
+/***/ }),
+
+/***/ "./src/api/resources/note/note.controller.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modules_query__ = __webpack_require__("./src/api/modules/query.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__note_model__ = __webpack_require__("./src/api/resources/note/note.model.js");
+
+
+
+/* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_0__modules_query__["a" /* generateControllers */])(__WEBPACK_IMPORTED_MODULE_1__note_model__["a" /* Note */]));
+
+/***/ }),
+
+/***/ "./src/api/resources/note/note.model.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export schema */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Note; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mongoose__ = __webpack_require__("mongoose");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mongoose___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_mongoose__);
+
+
+var schema = {};
+
+var noteSchema = new __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Schema(schema);
+
+var Note = __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.model('note', noteSchema);
+
+/***/ }),
+
+/***/ "./src/api/resources/note/note.restRouter.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return noteRouter; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__("express");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__note_controller__ = __webpack_require__("./src/api/resources/note/note.controller.js");
+
+
+
+var noteRouter = __WEBPACK_IMPORTED_MODULE_0_express___default.a.Router();
+
+noteRouter.param('id', __WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].findByParam);
+
+noteRouter.route('/').get(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].getAll).post(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].createOne);
+
+noteRouter.route('/:id')
+// before any method is run, req.docFromId will already be set
+// bc of the function associated with `noteRouter.param('id')` above
+.get(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].getOne).put(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].updateOne).delete(__WEBPACK_IMPORTED_MODULE_1__note_controller__["a" /* default */].deleteOne);
+
+/***/ }),
+
+/***/ "./src/api/resources/user/user.model.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export schema */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return User; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mongoose__ = __webpack_require__("mongoose");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mongoose___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_mongoose__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bcrypt__ = __webpack_require__("bcrypt");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bcrypt___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_bcrypt__);
+
+
+
+var schema = {};
+
+var userSchema = new __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Schema(schema, { timestamps: true });
+
+userSchema.methods = {
+  authenticate: function authenticate(plainTextPassword) {
+    return __WEBPACK_IMPORTED_MODULE_1_bcrypt___default.a.compareSync(plainTextPassword, this.password);
+  },
+  hashPassword: function hashPassword(plainTextPassword) {
+    if (!plainTextPassword) {
+      throw new Error('Could not save user');
+    }
+
+    var salt = __WEBPACK_IMPORTED_MODULE_1_bcrypt___default.a.genSaltSync(10);
+    return __WEBPACK_IMPORTED_MODULE_1_bcrypt___default.a.hashSync(plainTextPassword, salt);
+  }
+};
+
+var User = __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.model('user', userSchema);
+
+/***/ }),
+
+/***/ "./src/api/restRouter.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return restRouter; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__("express");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__resources_note__ = __webpack_require__("./src/api/resources/note/index.js");
+
+
+
+var restRouter = __WEBPACK_IMPORTED_MODULE_0_express___default.a.Router();
+
+restRouter.use('/note', __WEBPACK_IMPORTED_MODULE_1__resources_note__["a" /* noteRouter */]);
+
+/***/ }),
+
+/***/ "./src/db.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return connect; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mongoose__ = __webpack_require__("mongoose");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mongoose___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_mongoose__);
+
+__WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Promise = global.Promise;
+
+var connect = function connect() {
+  console.log('MONGO DB CONNECTED');
+  return __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.connect('mongodb://localhost/27017', {});
+};
 
 /***/ }),
 
@@ -919,10 +1315,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 var server = __WEBPACK_IMPORTED_MODULE_0_http___default.a.createServer(__WEBPACK_IMPORTED_MODULE_1__server__["default"]);
+var PORT = 7000;
 var currentApp = __WEBPACK_IMPORTED_MODULE_1__server__["default"];
 
-server.listen(7000, function () {
-  console.log('Server listening on port 7000');
+server.listen(PORT, function () {
+  console.log('Server listening on port ' + PORT);
 });
 
 if (true) {
@@ -935,6 +1332,20 @@ if (true) {
 
 /***/ }),
 
+/***/ "./src/middleware.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_body_parser__ = __webpack_require__("body-parser");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_body_parser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_body_parser__);
+
+
+var setGlobalMiddleware = function setGlobalMiddleware(app) {};
+
+/* harmony default export */ __webpack_exports__["a"] = (setGlobalMiddleware);
+
+/***/ }),
+
 /***/ "./src/server.js":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -942,25 +1353,29 @@ if (true) {
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__("express");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__api__ = __webpack_require__("./src/api/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_cors__ = __webpack_require__("cors");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_cors___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_cors__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_body_parser__ = __webpack_require__("body-parser");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_body_parser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_body_parser__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__middleware__ = __webpack_require__("./src/middleware.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__api__ = __webpack_require__("./src/api/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db__ = __webpack_require__("./src/db.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__api_modules_auth__ = __webpack_require__("./src/api/modules/auth.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_body_parser__ = __webpack_require__("body-parser");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_body_parser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_body_parser__);
+
+
+
 
 
 
 
 var app = __WEBPACK_IMPORTED_MODULE_0_express___default()();
 
-app.use(__WEBPACK_IMPORTED_MODULE_3_body_parser___default()({ extended: true }));
-app.use(__WEBPACK_IMPORTED_MODULE_2_cors___default()());
-app.use('/api', __WEBPACK_IMPORTED_MODULE_1__api__["a" /* rootRouter */]);
+Object(__WEBPACK_IMPORTED_MODULE_1__middleware__["a" /* default */])(app);
+Object(__WEBPACK_IMPORTED_MODULE_3__db__["a" /* connect */])();
+
+app.use('/signin', __WEBPACK_IMPORTED_MODULE_4__api_modules_auth__["a" /* signin */]);
+app.use('/api', __WEBPACK_IMPORTED_MODULE_2__api__["a" /* restRouter */]);
 
 app.all('*', function (req, res) {
-  res.json({
-    error: "Use /api/notes to get all notes or post a note, " + "otherwise use /api/notes/:id to update, get or delete a single note"
-  });
+  res.json({ ok: true });
 });
 
 /* harmony default export */ __webpack_exports__["default"] = (app);
@@ -976,17 +1391,45 @@ module.exports = __webpack_require__("./src/index.js");
 
 /***/ }),
 
+/***/ "babel-runtime/core-js/promise":
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/core-js/promise");
+
+/***/ }),
+
+/***/ "babel-runtime/helpers/asyncToGenerator":
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/helpers/asyncToGenerator");
+
+/***/ }),
+
+/***/ "babel-runtime/helpers/extends":
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/helpers/extends");
+
+/***/ }),
+
+/***/ "babel-runtime/regenerator":
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/regenerator");
+
+/***/ }),
+
+/***/ "bcrypt":
+/***/ (function(module, exports) {
+
+module.exports = require("bcrypt");
+
+/***/ }),
+
 /***/ "body-parser":
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
-
-/***/ }),
-
-/***/ "cors":
-/***/ (function(module, exports) {
-
-module.exports = require("cors");
 
 /***/ }),
 
@@ -997,6 +1440,13 @@ module.exports = require("express");
 
 /***/ }),
 
+/***/ "express-jwt":
+/***/ (function(module, exports) {
+
+module.exports = require("express-jwt");
+
+/***/ }),
+
 /***/ "http":
 /***/ (function(module, exports) {
 
@@ -1004,10 +1454,24 @@ module.exports = require("http");
 
 /***/ }),
 
-/***/ "uuid":
+/***/ "jsonwebtoken":
 /***/ (function(module, exports) {
 
-module.exports = require("uuid");
+module.exports = require("jsonwebtoken");
+
+/***/ }),
+
+/***/ "lodash":
+/***/ (function(module, exports) {
+
+module.exports = require("lodash");
+
+/***/ }),
+
+/***/ "mongoose":
+/***/ (function(module, exports) {
+
+module.exports = require("mongoose");
 
 /***/ })
 
