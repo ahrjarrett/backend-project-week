@@ -21,7 +21,7 @@ require("source-map-support").install();
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "66305ea1d00c7702fbee"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "a8253659713e12d790b5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1338,9 +1338,14 @@ if (true) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_body_parser__ = __webpack_require__("body-parser");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_body_parser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_body_parser__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__api_modules_auth__ = __webpack_require__("./src/api/modules/auth.js");
 
 
-var setGlobalMiddleware = function setGlobalMiddleware(app) {};
+
+var setGlobalMiddleware = function setGlobalMiddleware(app) {
+  app.use(__WEBPACK_IMPORTED_MODULE_0_body_parser___default.a.urlencoded({ extended: true }));
+  app.use(__WEBPACK_IMPORTED_MODULE_0_body_parser___default.a.json());
+};
 
 /* harmony default export */ __webpack_exports__["a"] = (setGlobalMiddleware);
 
