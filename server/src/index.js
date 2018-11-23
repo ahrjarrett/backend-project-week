@@ -1,13 +1,14 @@
 import http from 'http'
+require('dotenv').config()
+import config from './config'
 import { createServer } from 'http'
 import app from './server'
 
 const server = http.createServer(app)
-const PORT = 7000
 let currentApp = app
 
-server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`)
+server.listen(config.port, () => {
+  console.log(`Server listening on port ${config.port}`)
 })
 
 if (module.hot) {

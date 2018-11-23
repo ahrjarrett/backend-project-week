@@ -1,11 +1,9 @@
-import { User } from '../resources/user/user.model'
 import jwt from 'jsonwebtoken'
 import expressJwt from 'express-jwt'
+import { User } from '../resources/user/user.model'
+import config from '../../config'
 
-// remove? change?
-const jwtSecret = 'blueRhinoJumps'
-
-const checkToken = expressJwt({ secret: jwtSecret })
+const checkToken = expressJwt({ secret: config.secrets.JWT_SECRET })
 const disableAuth = false
 
 export const signin = (req, res, next) => {
@@ -17,9 +15,7 @@ export const signin = (req, res, next) => {
 }
 
 export const decodeToken = () => (req, res, next) => {
-  if (disableAuth) {
-    return next()
-  }
+  if (config.disableAuth) return next()
   // make it optional to place token on query string
   // if it is, place it on the headers where it should be
   // so checkToken can see it. See follow the 'Bearer 034930493' format
@@ -35,6 +31,8 @@ export const decodeToken = () => (req, res, next) => {
 }
 
 export const getFreshUser = () => (req, res, next) => {
+  if (config.disableAuth) return next()
+
   return User.findById(req.user.id)
     .then(function (user) {
       if (!user) {

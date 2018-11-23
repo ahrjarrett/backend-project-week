@@ -3,4 +3,5 @@ node_modules
 *.error
 .webpack
 
+.env
 backend-project.pem
