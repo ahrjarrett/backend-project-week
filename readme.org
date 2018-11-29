@@ -101,3 +101,14 @@ git remote add live ssh://ahrjarrett@18.236.166.82/root/repo/hello-world-node-ex
 
 
 
+
+
+* Tickets
+
+** DONE [DOING] Generate passwordHash on save
+
+The difficulty is figuring out how it works with the metaprogramming done to generate the controllers
+
+** TODO Associate note id with User when saving note with User
+
+Make that relationship bi-directional?

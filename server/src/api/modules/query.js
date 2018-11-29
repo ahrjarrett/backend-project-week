@@ -31,6 +31,7 @@ export const controllers = {
 }
 
 export const createOne = Model => (req, res, next) => {
+  console.log('MODEL (createOne):   ', Model)
   return controllers.createOne(Model, req.body)
     .then(doc => res.status(201).json(doc))
     .catch(err => next(err))

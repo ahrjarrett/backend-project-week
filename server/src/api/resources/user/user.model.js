@@ -8,14 +8,13 @@ export const schema = {
     required: [true, 'User email is required.'],
   },
 
-  passwordHash: {
+  password: {
     type: String,
     required: [true, 'User password is required.'],
   },
 
   username: {
     type: String,
-    // default: this.email,
   },
 
   notes: [{
@@ -26,10 +25,16 @@ export const schema = {
 
 const userSchema = new mongoose.Schema(schema, { timestamps: true })
 
+userSchema.pre('save', function (next) {
+  this.password = this.hashPassword(this.password)
+  next()
+})
+
 userSchema.methods = {
   authenticate(plainTextPassword) {
     return bcrypt.compareSync(plainTextPassword, this.password)
   },
+
   hashPassword(plainTextPassword) {
     if (!plainTextPassword) {
       throw new Error('Could not save user')
