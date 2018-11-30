@@ -10,13 +10,12 @@ const app = express()
 setupMiddware(app)
 connect()
 
-
 app.use('/signin', signin)
-app.use('/api', protect, restRouter)
+// add `protect` middleware before router to the routes you want to protect
+app.use('/api', restRouter)
 app.use('/graphql', graphQLRouter)
 app.use('/docs', graphiqlExpress({ endpointURL: '/graphql' }))
 
-// catch all
 app.all('*', (req, res) => {
   res.json({ ok: true })
 })
