@@ -1,24 +1,56 @@
+#+TITLE: Backend Server Readme
 
-* Deploy
-
-- Site:
-  http://18.236.166.82:7000/api/note
+- Deploy Site (EC2 Instance):
+  http://18.236.166.82/
+  As of 11/30, deployed to port 80 instead of 7XXX
 
 - Console: 
   https://console.aws.amazon.com/ec2/
 
-- SSH:
-  Notice we're logging in as user =ubuntu= instead of =ahrjarrett= or =root=
-
 - OS:
-Ubuntu 18
+  Ubuntu 18
+
+* Deploy
+
+After pushing your local changes to github:
+
+1. Log into remote server
+
+#+BEGIN_SRC
+  ssh -i backend-project.pem ubuntu@18.236.166.82
+  sudo su
+  cd ~/workspace/backend-project-week
+#+END_SRC
+
+2. Pull in changes
+
+Inside =/root/workspace/backend-project-week= on EC2 instance, do:
 
 #+BEGIN_SRC shell
-  $ ssh -i backend-project.pem ubuntu@18.236.166.82
-  # Once you've created a user, this will be your login!
-  $ ssh -i backend-project.pem ahrjarrett.236.166.82
-  $ sudo su # switch to root user
+  git pull
 #+END_SRC
+
+
+3. Kill any pm2 processes with =pm2 delete <app-name>=, in this case =server= (named after =server.js=)
+
+#+BEGIN_SRC 
+pm2 delete server
+#+END_SRC
+
+
+4. Build code and start app
+
+From inside =./server/=:
+
+#+BEGIN_SRC 
+rm -rf dist/
+NODE_ENV=prod npm start
+# kill process
+pm2 start dist/server.js
+#+END_SRC
+
+
+
 
 ** Config
 
@@ -29,7 +61,7 @@ Launching on AWS EC2 instance.
 
 - Remote in:
 
-  =ssh -i backend-project.pem ahrjarrett.236.166.82=, them =sudo su=
+  =ssh -i backend-project.pem ubuntu@18.236.166.82=, them =sudo su=
   
 *Note:* Make sure you run =chmod 0400 <path-to-pemfile>=, otherwise AWS will complain that it's not secure!
 
@@ -114,43 +146,5 @@ The difficulty is figuring out how it works with the metaprogramming done to gen
 Make that relationship bi-directional?
 
 
-* [New] Deploy 11/30/18
-
-- Site:
-  http://18.236.166.82:7000/api
-
-- Console: 
-  https://console.aws.amazon.com/ec2/
-
-
-
-** Manual deploy
-
-1. Pull in changes
-
-Inside =/root/workspace/backend-project-week= on server do:
-
-#+BEGIN_SRC shell
-git pull
-#+END_SRC
-
-
-2. Kill any pm2 processes with =pm2 delete <app-name>=, in this case =server= (named after =server.js=)
-
-#+BEGIN_SRC 
-pm2 delete server
-#+END_SRC
-
-
-3. Start pm2
-
-From inside =./server/=:
-
-#+BEGIN_SRC 
-rm -rf dist/
-NODE_ENV=prod npm start
-# kill process
-pm2 start dist/server.js
-#+END_SRC
 
 
