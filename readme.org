@@ -69,10 +69,10 @@ pm2 delete server
 From inside =./server/=:
 
 #+BEGIN_SRC 
-npm install
 rm -rf dist/
+npm i
 NODE_ENV=prod npm start
-# kill process
+# then, kill that process
 pm2 start dist/server.js
 #+END_SRC
 
