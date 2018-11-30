@@ -1,10 +1,6 @@
 import merge from 'lodash.merge'
 
 const env = process.env.NODE_ENV
-const {
-  MONGO_ADMIN,
-  MONGO_ADMIN_PASSWORD,
-} = process.env
 
 const baseConfig = {
   port: 7007,
@@ -16,6 +12,7 @@ const baseConfig = {
   },
   disableAuth: false,
 }
+
 
 let envConfig = {}
 

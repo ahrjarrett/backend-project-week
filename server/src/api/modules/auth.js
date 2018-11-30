@@ -1,11 +1,13 @@
-import jwt from 'jsonwebtoken'
-import expressJwt from 'express-jwt'
 import { User } from '../resources/user/user.model'
+import jwt from 'jsonwebtoken'
 import config from '../../config'
+import expressJwt from 'express-jwt'
 
 const checkToken = expressJwt({ secret: config.secrets.JWT_SECRET })
 
 export const signin = (req, res, next) => {
+  // console.log('REQUEST FROM SIGNIN MIDDLEWARE', req)
+  // console.log('REQUEST.BODY FROM SIGNIN MIDDLEWARE', req.body)
   // req.user will be there from the middleware
   // verify user. Then we can just create a token
   // and send it back for the client to consume
@@ -14,7 +16,9 @@ export const signin = (req, res, next) => {
 }
 
 export const decodeToken = () => (req, res, next) => {
-  if (config.disableAuth) return next()
+  if (config.disableAuth) {
+    return next()
+  }
   // make it optional to place token on query string
   // if it is, place it on the headers where it should be
   // so checkToken can see it. See follow the 'Bearer 034930493' format
@@ -29,13 +33,7 @@ export const decodeToken = () => (req, res, next) => {
   checkToken(req, res, next)
 }
 
-export const getFreshUser = () => async (req, res, next) => {
-  if (config.disableAuth) {
-    await User.remove()
-    req.user = await User.create({ email: 'andrew10@email.com', password: 'thisshitisbananas', notes: ['5c011ac21bd7db335ebaeaad', '5c011b021bd7db335ebaeab1'] })
-    return next()
-  }
-
+export const getFreshUser = () => (req, res, next) => {
   return User.findById(req.user.id)
     .then(function (user) {
       if (!user) {
@@ -90,8 +88,8 @@ export const verifyUser = () => (req, res, next) => {
 
 export const signToken = (id) => jwt.sign(
   { id },
-  jwtSecret,
-  { expiresIn: '30d' }
+  config.secrets.JWT_SECRET,
+  { expiresIn: config.expireTime }
 )
 
 export const protect = [decodeToken(), getFreshUser()]

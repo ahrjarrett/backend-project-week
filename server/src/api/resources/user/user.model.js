@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 export const schema = {
   username: {
@@ -38,8 +38,7 @@ userSchema.methods = {
       throw new Error('Could not save user')
     }
 
-    const salt = bcrypt.genSaltSync(10)
-    return bcrypt.hashSync(plainTextPassword, salt)
+    return bcrypt.hashSync(plainTextPassword, 10)
   }
 }
 
