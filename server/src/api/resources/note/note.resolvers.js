@@ -14,9 +14,10 @@ const allNotes = (_, __, { user }) => {
 
 const newNote = async (_, { input }, { user }) => {
   const note = await Note.create(input)
+
   User.findByIdAndUpdate(
     user.id,
-    { notes: user.notes.concat(note.id) },
+    { notes: [...user.notes, note.id] },
     { new: true })
     .exec()
 
