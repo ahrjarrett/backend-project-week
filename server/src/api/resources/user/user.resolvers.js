@@ -19,14 +19,22 @@ const getMe = (_, __, { user }) => {
   }
 }
 
+const updateMe = (_, { input }, { user }) => {
+  console.log('USER FROM REQUEST:', user)
+  merge(user, input)
+  return user.save()
+}
+
 export const userResolvers = {
   Query: {
-    getMe
+    getMe,
   },
-  // using a nested resolver here
+  Mutation: {
+    updateMe,
+  },
   User: {
-    // 1st arg (rootValue) is where resolver branched from, in this case user
     notes: (user) => {
+      // ^^ 1st arg (rootValue) is where resolver 'branched' from, in this case user
       // TODO: here is where you would query DB for all notes owned by this user
       return ['note 1', 'note 2', 'note 3']
     },

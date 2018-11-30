@@ -3,14 +3,14 @@ type Note {
   title: String!
   body: String!
   isComplete: Boolean
-  # user: String!
+  user: String!
 }
 
 input NewNote {
   title: String!
   body: String!
   isComplete: Boolean
-  # user: String!
+  user: String!
 }
 
 input UpdatedNote {
@@ -24,4 +24,10 @@ input UpdatedNote {
 extend type Query {
   Note(id: ID!): Note!
   allNotes: [Note]!
+}
+
+extend type Mutation {
+  newNote(input: NewNote!): Note!
+  updateNote(input: UpdatedNote!): Note!
+  deleteNote(id: ID!): Note!
 }

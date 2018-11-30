@@ -39,6 +39,10 @@ Create a "getMe" function that only fetches projects and notes that belong to th
 
 [[https://www.apollographql.com/docs/apollo-server/migration-two-dot.html#simple-use][Instructions for migrating]]
 
+*** TODO Add *project* type, extend models to support it
+1 project to many notes
+Many users to many projects?
+
 
 * Deploy
 

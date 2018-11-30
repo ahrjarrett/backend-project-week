@@ -9,9 +9,12 @@ type User {
 
 input UpdatedUser {
   username: String!
-  email: String!
 }
 
 type Query {
   getMe: User!
+}
+
+type Mutation {
+  updateMe(input: UpdatedUser!): User!
 }

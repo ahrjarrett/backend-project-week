@@ -7,8 +7,21 @@ const getNote = async (_, { id }) => {
   return note
 }
 
-const allNotes = (_, { user }) => {
+const allNotes = (_, __, { user }) => {
   return Note.find({}).exec()
+}
+
+const newNote = (_, { input }) => {
+  return Note.create(input)
+}
+
+const updateNote = (_, { input }) => {
+  const { id, ...update } = input
+  return Note.findByIdAndUpdate(id, update, { new: true }).exec()
+}
+
+const deleteNote = (_, { id }) => {
+  return Note.findByIdAndRemove(id).exec()
 }
 
 export const noteResolvers = {
@@ -16,4 +29,9 @@ export const noteResolvers = {
     allNotes,
     Note: getNote,
   },
+  Mutation: {
+    newNote,
+    updateNote,
+    deleteNote,
+  }
 }
