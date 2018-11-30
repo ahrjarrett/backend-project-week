@@ -4,7 +4,7 @@ const nodeExternals = require('webpack-node-externals')
 const StartServerPlugin = require('start-server-webpack-plugin')
 const dotenv = require('dotenv')
 
-// add .env variables to node process
+// add environment variables in .env to process.env
 const CONFIG_RESULT = dotenv.config()
 
 module.exports = {
@@ -49,6 +49,10 @@ module.exports = {
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       'process.env.BUILD_TARGET': JSON.stringify('server'),
+      'process.env.JWT_SECRET': JSON.stringify(process.env.JWT_SECRET),
+      'process.env.MONGO_ADMIN': JSON.stringify(process.env.MONGO_ADMIN),
+      'process.env.MONGO_ADMIN_PASSWORD': JSON.stringify(process.env.MONGO_ADMIN_PASSWORD),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
     new webpack.BannerPlugin({ banner: 'require("source-map-support").install();', raw: true, entryOnly: false })
   ],

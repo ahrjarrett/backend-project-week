@@ -2,7 +2,7 @@
 * Deploy
 
 - Site:
-  http://18.236.166.82:7000/api/notes
+  http://18.236.166.82:7000/api/note
 
 - Console: 
   https://console.aws.amazon.com/ec2/
@@ -112,3 +112,45 @@ The difficulty is figuring out how it works with the metaprogramming done to gen
 ** TODO Associate note id with User when saving note with User
 
 Make that relationship bi-directional?
+
+
+* [New] Deploy 11/30/18
+
+- Site:
+  http://18.236.166.82:7000/api
+
+- Console: 
+  https://console.aws.amazon.com/ec2/
+
+
+
+** Manual deploy
+
+1. Pull in changes
+
+Inside =/root/workspace/backend-project-week= on server do:
+
+#+BEGIN_SRC shell
+git pull
+#+END_SRC
+
+
+2. Kill any pm2 processes with =pm2 delete <app-name>=, in this case =server= (named after =server.js=)
+
+#+BEGIN_SRC 
+pm2 delete server
+#+END_SRC
+
+
+3. Start pm2
+
+From inside =./server/=:
+
+#+BEGIN_SRC 
+rm -rf dist/
+NODE_ENV=prod npm start
+# kill process
+pm2 start dist/server.js
+#+END_SRC
+
+
