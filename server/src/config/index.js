@@ -1,8 +1,16 @@
 import merge from 'lodash/merge'
+import dotenv from 'dotenv'
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development'
 
 const env = process.env.NODE_ENV
+const {
+  MONGO_ADMIN,
+  MONGO_ADMIN_PASSWORD,
+} = process.env
+
+console.log('MONGO_ADMIN', MONGO_ADMIN)
+console.log('MONGO_ADMIN PASSWORD', MONGO_ADMIN_PASSWORD)
 
 const baseConfig = {
   port: 7000,
@@ -10,7 +18,7 @@ const baseConfig = {
     JWT_SECRET: process.env.JWT_SECRET,
   },
   db: {
-    url: 'mongodb://localhost/27017',
+    url: `mongodb://${MONGO_ADMIN}:${MONGO_ADMIN_PASSWORD}@ds121814.mlab.com:21814/backend-project-week`
   },
   disableAuth: false,
 }

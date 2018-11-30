@@ -1,5 +1,4 @@
 import http from 'http'
-require('dotenv').config()
 import config from './config'
 import { createServer } from 'http'
 import app from './server'
