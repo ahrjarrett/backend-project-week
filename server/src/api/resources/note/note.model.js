@@ -5,17 +5,14 @@ export const schema = {
     type: String,
     required: true,
   },
-
   body: {
     type: String,
     required: true,
   },
-
   isComplete: {
     type: Boolean,
     default: false,
   },
-
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',

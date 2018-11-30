@@ -1,0 +1,14 @@
+type Note {
+  id: ID!
+  title: String!
+  body: String!
+  isComplete: Boolean
+  user: User!
+}
+
+input UpdatedNote {
+  id: ID!
+  title: String
+  body: String
+  isComplete: Boolean
+}

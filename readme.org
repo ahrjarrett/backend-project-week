@@ -1,6 +1,6 @@
 #+TITLE: Backend Server Readme
 
-- Deploy Site (EC2 Instance):
+- Deploy (EC2 Instance):
   http://18.236.166.82/
   As of 11/30, deployed to port 80 instead of 7XXX
 
@@ -9,6 +9,31 @@
 
 - OS:
   Ubuntu 18
+
+* Tickets
+
+** Deployment
+
+*** TODO Set up npm run build command
+
+** Backend
+*** DONE Generate passwordHash on save
+
+The difficulty is figuring out how it works with the metaprogramming done to generate the controllers
+
+*** TODO Associate note id with User when saving note with User
+
+Make that relationship bi-directional?
+
+*** TODO Rework model
+
+Create a "project" or "book" that has a one-to-many relationship with Notes
+
+Create a "getMe" function that only fetches projects and notes that belong to the authenticated user
+
+*** TODO Upgrade to apollo-server-express v2
+
+[[https://www.apollographql.com/docs/apollo-server/migration-two-dot.html#simple-use][Instructions for migrating]]
 
 * Deploy
 
@@ -32,7 +57,6 @@ Inside =/root/workspace/backend-project-week= on EC2 instance, do:
   git pull
 #+END_SRC
 
-
 3. Kill any pm2 processes with =pm2 delete <app-name>=, in this case =server= (named after =server.js=)
 
 #+BEGIN_SRC 
@@ -45,6 +69,7 @@ pm2 delete server
 From inside =./server/=:
 
 #+BEGIN_SRC 
+npm install
 rm -rf dist/
 NODE_ENV=prod npm start
 # kill process
@@ -52,7 +77,7 @@ pm2 start dist/server.js
 #+END_SRC
 
 
-
+* Initial Config
 
 ** Config
 
@@ -109,43 +134,6 @@ EC2 needs to know which port to expose.
    | Custom TCP | TCP      |       7000 | Anywhere | [Optional]  |
    
 Now navigate to http://18.236.166.82:7000/ and you should see your dumb app running!
-
-
-** Setting up your git repo
-
-[[https://www.digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps][Followed these instructions]]
-
-1. Create =/root/repo= directory
-2. Create =/root/repo/<PROJECT-NAME>.git= directory
-3. Navigate there and run =git init --bare=
-4. Touch =hooks/post-receive= file
-5. Make it an executable with =chmod +x hooks/post-receive=
-6. Put this in there:
-
-   #+BEGIN_SRC shell
-     #!/bin/sh
-     git --work-tree=/root/workspace/<PROJECT-NAME> --git-dir=/root/repo/<PROJECT-NAME.git checkout -f
-   #+END_SRC
-   
-7. Link local repo with remote
-
-#+BEGIN_SRC shell
-git remote add live ssh://ahrjarrett@18.236.166.82/root/repo/hello-world-node-express.git
-#+END_SRC
-
-
-
-
-
-* Tickets
-
-** DONE [DOING] Generate passwordHash on save
-
-The difficulty is figuring out how it works with the metaprogramming done to generate the controllers
-
-** TODO Associate note id with User when saving note with User
-
-Make that relationship bi-directional?
 
 
 

@@ -2,21 +2,19 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 
 export const schema = {
+  username: {
+    type: String,
+    default: this.email,
+  },
+  password: {
+    type: String,
+    required: [true, 'User password is required.'],
+  },
   email: {
     type: String,
     unique: true,
     required: [true, 'User email is required.'],
   },
-
-  password: {
-    type: String,
-    required: [true, 'User password is required.'],
-  },
-
-  username: {
-    type: String,
-  },
-
   notes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'note',

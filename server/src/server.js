@@ -1,9 +1,9 @@
 import express from 'express'
 import setupMiddleware from './middleware'
-import { restRouter } from './api'
+import { restRouter, graphQLRouter } from './api'
+import { graphiqlExpress } from 'apollo-server-express'
 import { connect } from './db'
 import { signin, protect } from './api/modules/auth'
-import bodyParser from 'body-parser'
 
 const app = express()
 
@@ -11,7 +11,9 @@ setupMiddleware(app)
 connect()
 
 app.use('/signin', signin)
-app.use('/api', restRouter)
+app.use('/api', protect, restRouter)
+app.use('/graphql', graphQLRouter)
+app.use('/docs', graphiqlExpress({ endpointURL: '/graphql' }))
 
 app.all('*', (req, res) => {
   res.json({ ok: true })

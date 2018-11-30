@@ -1,4 +1,5 @@
-import merge from 'lodash/merge'
+import merge from 'lodash.merge'
+
 const env = process.env.NODE_ENV
 const {
   MONGO_ADMIN,
