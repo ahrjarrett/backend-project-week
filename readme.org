@@ -15,6 +15,8 @@
 After pushing your local changes to github:
 
 1. Log into remote server
+   
+From your local branch (where your =.pem= key is), log in via SSH:
 
 #+BEGIN_SRC
   ssh -i backend-project.pem ubuntu@18.236.166.82
