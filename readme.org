@@ -7,6 +7,9 @@
 - Console: 
   https://console.aws.amazon.com/ec2/
 
+- Node:
+  v10.13.0
+
 - OS:
   Ubuntu 18
 
@@ -15,6 +18,7 @@
 ** Deployment
 
 *** TODO Set up npm run build command
+*** TODO Set up git repo with post-receive hooks to automate deployment
 
 ** Backend
 *** DONE Generate passwordHash on save
@@ -35,6 +39,7 @@ Create a "getMe" function that only fetches projects and notes that belong to th
 
 [[https://www.apollographql.com/docs/apollo-server/migration-two-dot.html#simple-use][Instructions for migrating]]
 
+
 * Deploy
 
 After pushing your local changes to github:
@@ -44,9 +49,9 @@ After pushing your local changes to github:
 From your local branch (where your =.pem= key is), log in via SSH:
 
 #+BEGIN_SRC
-  ssh -i backend-project.pem ubuntu@18.236.166.82
-  sudo su
-  cd ~/workspace/backend-project-week
+  $ ssh -i backend-project.pem ubuntu@18.236.166.82
+  $ sudo su
+  $ cd ~/workspace/backend-project-week
 #+END_SRC
 
 2. Pull in changes
@@ -54,13 +59,13 @@ From your local branch (where your =.pem= key is), log in via SSH:
 Inside =/root/workspace/backend-project-week= on EC2 instance, do:
 
 #+BEGIN_SRC shell
-  git pull
+  $ git pull
 #+END_SRC
 
 3. Kill any pm2 processes with =pm2 delete <app-name>=, in this case =server= (named after =server.js=)
 
 #+BEGIN_SRC 
-pm2 delete server
+  $ pm2 delete server
 #+END_SRC
 
 
@@ -69,13 +74,14 @@ pm2 delete server
 From inside =./server/=:
 
 #+BEGIN_SRC 
-rm -rf dist/
-npm i
-NODE_ENV=prod npm start
-# then, kill that process
-pm2 start dist/server.js
+  $ rm -rf dist/
+  $ sudo npm i
+  $ NODE_ENV=prod npm start
+  $ # then, kill that process
+  $ pm2 start dist/server.js
 #+END_SRC
 
+For some reason bcrypt doesn't like to install without sudo. Need to create an =npm run build= script.
 
 * Initial Config
 
@@ -108,13 +114,6 @@ Installing version 10.x
   curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
   sudo apt-get install -y nodejs
 #+END_SRC
-
-** Installing `build-essential` for bcrypt to work on ubuntu
-
-#+BEGIN_SRC 
-  sudo apt-get install build-essential python2.7
-#+END_SRC
-
 
 ** Setting up the app
 
