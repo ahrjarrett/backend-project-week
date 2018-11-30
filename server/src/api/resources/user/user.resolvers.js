@@ -11,16 +11,10 @@ import merge from 'lodash.merge'
  * 4. info      :: native AST for graphQL query; advanced use */
 
 const getMe = (_, __, { user }) => {
-  return {
-    id: 3424123151234,
-    username: 'andrew',
-    createdAt: 'create datetime',
-    updatedAt: 'updated datetime',
-  }
+  return user
 }
 
 const updateMe = (_, { input }, { user }) => {
-  console.log('USER FROM REQUEST:', user)
   merge(user, input)
   return user.save()
 }
@@ -33,10 +27,11 @@ export const userResolvers = {
     updateMe,
   },
   User: {
-    notes: (user) => {
-      // ^^ 1st arg (rootValue) is where resolver 'branched' from, in this case user
-      // TODO: here is where you would query DB for all notes owned by this user
-      return ['note 1', 'note 2', 'note 3']
+    async notes(user) {
+      const populated = await user
+        .populate('notes')
+        .execPopulate()
+      return populated.notes
     },
   },
 }

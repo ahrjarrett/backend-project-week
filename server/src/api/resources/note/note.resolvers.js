@@ -1,4 +1,5 @@
 import { Note } from './note.model'
+import { User } from '../user/user.model'
 import merge from 'lodash.merge'
 
 const getNote = async (_, { id }) => {
@@ -11,8 +12,15 @@ const allNotes = (_, __, { user }) => {
   return Note.find({}).exec()
 }
 
-const newNote = (_, { input }) => {
-  return Note.create(input)
+const newNote = async (_, { input }, { user }) => {
+  const note = await Note.create(input)
+  User.findByIdAndUpdate(
+    user.id,
+    { notes: user.notes.concat(note.id) },
+    { new: true })
+    .exec()
+
+  return note
 }
 
 const updateNote = (_, { input }) => {
@@ -33,5 +41,5 @@ export const noteResolvers = {
     newNote,
     updateNote,
     deleteNote,
-  }
+  },
 }

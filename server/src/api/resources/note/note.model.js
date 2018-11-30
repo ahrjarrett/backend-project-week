@@ -13,11 +13,6 @@ export const schema = {
     type: Boolean,
     default: false,
   },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
-    required: true,
-  },
 }
 
 const noteSchema = new mongoose.Schema(schema, { timestamps: true })

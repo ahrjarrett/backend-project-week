@@ -4,7 +4,6 @@ import { User } from '../resources/user/user.model'
 import config from '../../config'
 
 const checkToken = expressJwt({ secret: config.secrets.JWT_SECRET })
-const disableAuth = false
 
 export const signin = (req, res, next) => {
   // req.user will be there from the middleware
@@ -30,8 +29,12 @@ export const decodeToken = () => (req, res, next) => {
   checkToken(req, res, next)
 }
 
-export const getFreshUser = () => (req, res, next) => {
-  if (config.disableAuth) return next()
+export const getFreshUser = () => async (req, res, next) => {
+  if (config.disableAuth) {
+    await User.remove()
+    req.user = await User.create({ email: 'andrew10@email.com', password: 'thisshitisbananas', notes: ['5c011ac21bd7db335ebaeaad', '5c011b021bd7db335ebaeab1'] })
+    return next()
+  }
 
   return User.findById(req.user.id)
     .then(function (user) {

@@ -4,11 +4,14 @@ type User {
   email: String!
   createdAt: String!
   updatedAt: String!
-  notes: [String]!
+  notes: [Note]!
 }
 
 input UpdatedUser {
-  username: String!
+  id: ID!
+  username: String
+  email: String
+  notes: [ID!]
 }
 
 type Query {
