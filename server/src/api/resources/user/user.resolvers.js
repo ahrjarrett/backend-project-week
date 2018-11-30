@@ -1,4 +1,5 @@
 import { User } from './user.model'
+import { Note } from '../note/note.model'
 import merge from 'lodash.merge'
 
 /***  Resolvers are passed 4 arguments:
@@ -21,5 +22,13 @@ const getMe = (_, __, { user }) => {
 export const userResolvers = {
   Query: {
     getMe
-  }
+  },
+  // using a nested resolver here
+  User: {
+    // 1st arg (rootValue) is where resolver branched from, in this case user
+    notes: (user) => {
+      // TODO: here is where you would query DB for all notes owned by this user
+      return ['note 1', 'note 2', 'note 3']
+    },
+  },
 }

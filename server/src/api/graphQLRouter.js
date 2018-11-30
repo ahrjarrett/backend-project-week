@@ -1,6 +1,6 @@
 import { makeExecutableSchema } from 'graphql-tools'
 import { userType, userResolvers } from './resources/user'
-// import { noteType } from './resources/note'
+import { noteType, noteResolvers } from './resources/note'
 import merge from 'lodash.merge'
 import { graphqlExpress } from 'apollo-server-express'
 
@@ -14,11 +14,12 @@ const schema = makeExecutableSchema({
   typeDefs: [
     baseSchema,
     userType,
-    // noteType,
+    noteType,
   ],
   resolvers: merge(
     {},
     userResolvers,
+    noteResolvers,
   ),
 })
 

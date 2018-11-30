@@ -3,7 +3,14 @@ type Note {
   title: String!
   body: String!
   isComplete: Boolean
-  user: User!
+  # user: String!
+}
+
+input NewNote {
+  title: String!
+  body: String!
+  isComplete: Boolean
+  # user: String!
 }
 
 input UpdatedNote {
@@ -11,4 +18,10 @@ input UpdatedNote {
   title: String
   body: String
   isComplete: Boolean
+}
+
+# use `extend` here bc Query has already been defined in User schema
+extend type Query {
+  Note(id: ID!): Note!
+  allNotes: [Note]!
 }
