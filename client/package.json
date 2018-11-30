@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "frontend for the backend of my experiment with graphql and metaprogramming",
   "author": "Andrew Jarrett (ahrjarrett@gmail.com)",
-  "homepage": "http://18.236.166.82/",
   "dependencies": {
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3",
-    "react-scripts-ts": "3.1.0"
+    "react": "16.7.0-alpha.0",
+    "react-dom": "16.7.0-alpha.0",
+    "react-scripts-ts": "3.1.0",
+    "styled-components": "4.1.2"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -20,6 +20,8 @@
     "@types/node": "10.12.11",
     "@types/react": "16.7.10",
     "@types/react-dom": "16.0.11",
+    "@types/styled-components": "4.1.2",
+    "node-sass": "4.10.0",
     "typescript": "3.2.1"
   }
 }

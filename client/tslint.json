@@ -1,5 +1,50 @@
 {
-  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "extends": [
+    "tslint:latest",
+    "tslint:recommended",
+    "tslint-react",
+    "tslint-config-prettier"
+  ],
+  "rules": {
+    "prettier": [
+      true,
+      {
+        "printWidth": 100,
+        "tabWidth": 2,
+        "useTabs": false,
+        "singleQuote": true,
+        "trailingComma": "es5"
+      }
+    ],
+    "interface-name": [
+      true,
+      "never-prefix"
+    ],
+    "jsx-boolean-value": [
+      false
+    ],
+    "jsx-no-lambda": [
+      false
+    ],
+    "max-classes-per-file": false,
+    "member-ordering": [
+      false
+    ],
+    "no-console": false,
+    "no-implicit-dependencies": [
+      true,
+      "dev"
+    ],
+    "no-string-literal": false,
+    "no-submodule-imports": [
+      false
+    ],
+    "object-literal-sort-keys": [
+      false
+    ],
+    "strictNullChecks": true
+  },
+  "rulesDirectory": [],
   "linterOptions": {
     "exclude": [
       "config/**/*.js",
