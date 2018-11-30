@@ -1,7 +1,5 @@
 import merge from 'lodash.merge'
 
-const testData = { message: 'hello' }
-
 export const controllers = {
   createOne(Model, body) {
     return Model.create(body)
@@ -31,7 +29,6 @@ export const controllers = {
 }
 
 export const createOne = Model => (req, res, next) => {
-  console.log('MODEL (createOne):   ', Model)
   return controllers.createOne(Model, req.body)
     .then(doc => res.status(201).json(doc))
     .catch(err => next(err))
